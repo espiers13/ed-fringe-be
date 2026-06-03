@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "test": "NODE_ENV=test jest",
-    "seed": "node db/seeds/run-seed.js"
+    "seed": "node db/seeds/run-seed.js",
+    "seed:prod": "NODE_ENV=production node db/seeds/run-seed.js"
   },
   "jest": {
     "testEnvironment": "node"
