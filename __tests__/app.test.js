@@ -19,12 +19,13 @@ describe("POST /api/login - Authenticate user", () => {
       .send({ username: "test", password: "test1234" })
       .expect(200)
       .then(({ body }) => {
-        expect(body).toMatchObject({
+        expect(body.user).toMatchObject({
           id: 1,
           name: "Emily Spiers",
           username: "test",
           email: "test@test.com",
         });
+        expect(body).toHaveProperty("token");
       });
   });
 
@@ -90,8 +91,15 @@ describe("DELETE /api/user/delete - Delete user by credentials", () => {
 describe("GET /api/schedule/:user_id - Get schedule by user_id", () => {
   test("Status 200: Returns an array containing scheduled event codes when passed a user_id", () => {
     return request(app)
-      .get(`/api/schedule/1`)
-      .expect(200)
+      .post("/api/login")
+      .send({ username: "test", password: "test1234" })
+      .then(({ body }) => {
+        const token = body.token;
+        return request(app)
+          .get(`/api/schedule/1`)
+          .set("Authorization", `Bearer ${token}`)
+          .expect(200);
+      })
       .then(({ body }) => {
         expect(Array.isArray(body)).toBe(true);
         expect(body.length).toBeGreaterThan(0);
@@ -105,9 +113,16 @@ describe("GET /api/schedule/:user_id - Get schedule by user_id", () => {
 describe("POST /api/schedule/:user_id - Post event code to schedule when given user_id and event code", () => {
   test("Status 201: Returns scheduled item and adds it to user schedule by user_id", () => {
     return request(app)
-      .post(`/api/schedule/1`)
-      .send({ code: "DEMO:2026ALFIEMO" })
-      .expect(201)
+      .post("/api/login")
+      .send({ username: "test", password: "test1234" })
+      .then(({ body }) => {
+        const token = body.token;
+        return request(app)
+          .post(`/api/schedule/1`)
+          .set("Authorization", `Bearer ${token}`)
+          .send({ code: "DEMO:2026ALFIEMO" })
+          .expect(201);
+      })
       .then(({ body }) => {
         expect(body).toMatchObject({
           user_id: 1,
@@ -121,9 +136,16 @@ describe("POST /api/schedule/:user_id - Post event code to schedule when given u
 describe("PATCH /api/schedule/:user_id - Remove event from schedue when given user_id and event code", () => {
   test("Status 200: Returns array of scheduled events with given code removed", () => {
     return request(app)
-      .patch("/api/schedule/1")
-      .send({ code: "DEMO:2026AFTERSH" })
-      .expect(200)
+      .post("/api/login")
+      .send({ username: "test", password: "test1234" })
+      .then(({ body }) => {
+        const token = body.token;
+        return request(app)
+          .patch("/api/schedule/1")
+          .set("Authorization", `Bearer ${token}`)
+          .send({ code: "DEMO:2026AFTERSH" })
+          .expect(200);
+      })
       .then(({ body }) => {
         const found = body.some((item) => item.code === "DEMO:2026AFTERSH");
         expect(found).toBe(false);

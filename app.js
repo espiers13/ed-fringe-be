@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const { authenticateToken } = require("./middleware/auth");
 
 const {
   getUserByCredentials,
@@ -30,15 +31,15 @@ app.post("/api/user/delete", deleteUserByCredentials);
 
 // GET SCHEDULE BY USER_ID
 
-app.get("/api/schedule/:user_id", getScheduleByUserId);
+app.get("/api/schedule/:user_id", authenticateToken, getScheduleByUserId);
 
 // ADD EVENT TO SCHEDULE
 
-app.post("/api/schedule/:user_id", postToSchedule);
+app.post("/api/schedule/:user_id", authenticateToken, postToSchedule);
 
 // REMOVE EVENT FROM SCHEDULE
 
-app.patch("/api/schedule/:user_id", removeFromSchedule);
+app.patch("/api/schedule/:user_id", authenticateToken, removeFromSchedule);
 
 // ERRORS
 

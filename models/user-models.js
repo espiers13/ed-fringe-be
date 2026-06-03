@@ -1,5 +1,6 @@
 const db = require("../db/index");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const saltRounds = 10;
 
@@ -27,7 +28,14 @@ exports.fetchUserByUsernamePassword = (username, password) => {
           });
         }
 
-        return user;
+        const token = jwt.sign(
+          { user_id: user.id, username: user.username },
+          process.env.JWT_SECRET,
+          { expiresIn: "7d" },
+        );
+
+        const { password: _, ...userWithoutPassword } = user;
+        return { user: userWithoutPassword, token };
       });
     })
     .catch((err) => {
