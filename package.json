@@ -1,8 +1,24 @@
 {
+  "name": "ed-fringe-be",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "NODE_ENV=test jest",
+    "seed": "node db/seeds/run-seed.js"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "pg": "^8.21.0",
     "pg-format": "^1.0.4"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "jest-sorted": "^1.0.15",
+    "supertest": "^7.2.2"
   }
 }
