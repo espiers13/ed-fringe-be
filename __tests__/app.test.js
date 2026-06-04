@@ -42,6 +42,20 @@ describe("POST /api/login - Authenticate user", () => {
         expect(body.msg).toEqual("Invalid password");
       });
   });
+
+  test.only("Status 401: User doesn't exist", () => {
+    const credentials = {
+      username: "notauser",
+      password: "notthepassword",
+    };
+    return request(app)
+      .post("/api/login")
+      .send(credentials)
+      .expect(401)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("User not found");
+      });
+  });
 });
 
 describe("POST /api/signup - Create new user", () => {
