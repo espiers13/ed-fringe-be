@@ -34,10 +34,11 @@ exports.deleteUserByCredentials = (req, res, next) => {
   const { username, password } = req.body;
 
   fetchUserByUsernamePassword(username, password)
-    .then((userData) => {
-      removeUserData(userData).then(() => {
-        res.sendStatus(204);
-      });
+    .then(({ user }) => {
+      return removeUserData(user);
+    })
+    .then(() => {
+      res.sendStatus(204);
     })
     .catch((err) => {
       next(err);
