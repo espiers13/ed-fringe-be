@@ -47,13 +47,19 @@ exports.createNewUser = (newUser) => {
   const { name, username, email, password } = newUser;
 
   return bcrypt.hash(password, saltRounds).then((hashedPassword) => {
-    const queryStr = `INSERT INTO users (name, username, email, password) VALUES ($1, $2, $3, $4) RETURNING username, name, password, email, id;`;
+    const queryStr = `INSERT INTO users (name, username, email, password) VALUES ($1, $2, $3, $4) RETURNING username, name, email, id;`;
     const values = [name, username, email, hashedPassword];
 
     return db
       .query(queryStr, values)
       .then(({ rows }) => {
-        return rows[0];
+        const user = rows[0];
+        const token = jwt.sign(
+          { user_id: user.id, username: user.username },
+          process.env.JWT_SECRET,
+          { expiresIn: "7d" },
+        );
+        return { user, token };
       })
       .catch((err) => {
         if (err.code === "23505" && err.constraint === "users_username_key") {
@@ -62,6 +68,7 @@ exports.createNewUser = (newUser) => {
             msg: "Username already exists",
           });
         }
+        throw err;
       });
   });
 };

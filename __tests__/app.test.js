@@ -43,7 +43,7 @@ describe("POST /api/login - Authenticate user", () => {
       });
   });
 
-  test.only("Status 401: User doesn't exist", () => {
+  test("Status 401: User doesn't exist", () => {
     const credentials = {
       username: "notauser",
       password: "notthepassword",
@@ -71,10 +71,11 @@ describe("POST /api/signup - Create new user", () => {
       .send(newUser)
       .expect(201)
       .then(({ body }) => {
-        expect(body).toHaveProperty("name");
-        expect(body).toHaveProperty("username");
-        expect(body).toHaveProperty("email");
-        expect(body.id).toBe(3);
+        expect(body.user).toHaveProperty("name");
+        expect(body.user).toHaveProperty("username");
+        expect(body.user).toHaveProperty("email");
+        expect(body.user.id).toBe(3);
+        expect(body).toHaveProperty("token");
       });
   });
 });
