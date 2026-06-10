@@ -167,3 +167,51 @@ describe("PATCH /api/schedule/:user_id - Remove event from schedue when given us
       });
   });
 });
+
+describe("PATCH /api/user/password - Change user password", () => {
+  test("Status 200: Returns updated user when correct credentials and new password are given", () => {
+    return request(app)
+      .patch("/api/user/password")
+      .send({
+        username: "test",
+        currentPassword: "test1234",
+        newPassword: "newpassword123",
+      })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.user).toMatchObject({
+          username: "test",
+          name: "Emily Spiers",
+          email: "test@test.com",
+        });
+      });
+  });
+
+  test("Status 401: Returns error when current password is incorrect", () => {
+    return request(app)
+      .patch("/api/user/password")
+      .send({
+        username: "test",
+        currentPassword: "wrongpassword",
+        newPassword: "newpassword123",
+      })
+      .expect(401)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid password");
+      });
+  });
+
+  test("Status 401: Returns error when user does not exist", () => {
+    return request(app)
+      .patch("/api/user/password")
+      .send({
+        username: "notauser",
+        currentPassword: "test1234",
+        newPassword: "newpassword123",
+      })
+      .expect(401)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+});

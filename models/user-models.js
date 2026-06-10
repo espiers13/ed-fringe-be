@@ -113,3 +113,27 @@ exports.patchSchedule = (user_id, code) => {
       return rows;
     });
 };
+
+exports.updateUserPassword = (username, currentPassword, newPassword) => {
+  return db
+    .query(`SELECT id, password FROM users WHERE username = $1`, [username])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 401, msg: "User not found" });
+      }
+      const user = rows[0];
+      return bcrypt.compare(currentPassword, user.password).then((isMatch) => {
+        if (!isMatch) {
+          return Promise.reject({ status: 401, msg: "Invalid password" });
+        }
+        return bcrypt.hash(newPassword, saltRounds).then((hashedPassword) => {
+          return db
+            .query(
+              `UPDATE users SET password = $1 WHERE id = $2 RETURNING id, username, name, email;`,
+              [hashedPassword, user.id],
+            )
+            .then(({ rows }) => rows[0]);
+        });
+      });
+    });
+};

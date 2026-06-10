@@ -5,6 +5,7 @@ const {
   fetchScheduleByUserId,
   insertSchedule,
   patchSchedule,
+  updateUserPassword,
 } = require("../models/user-models");
 
 exports.getUserByCredentials = (req, res, next) => {
@@ -77,6 +78,18 @@ exports.removeFromSchedule = (req, res, next) => {
     .then((schedule) => {
       console.log(schedule);
       res.status(200).send(schedule);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchUserPassword = (req, res, next) => {
+  const { username, currentPassword, newPassword } = req.body;
+
+  updateUserPassword(username, currentPassword, newPassword)
+    .then((user) => {
+      res.status(200).send({ user });
     })
     .catch((err) => {
       next(err);

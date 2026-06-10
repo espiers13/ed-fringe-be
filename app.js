@@ -10,6 +10,7 @@ const {
   getScheduleByUserId,
   postToSchedule,
   removeFromSchedule,
+  patchUserPassword,
 } = require("./controllers/user-controllers");
 
 // MIDDLEWARE
@@ -28,6 +29,10 @@ app.post("/api/signup", postNewUser);
 // DELETE USER REQUEST
 
 app.post("/api/user/delete", deleteUserByCredentials);
+
+// PATCH PASSWORD REQUEST
+
+app.patch("/api/user/password", patchUserPassword);
 
 // GET SCHEDULE BY USER_ID
 
