@@ -16,7 +16,7 @@ const {
 const {
   forgotPassword,
   resetPassword,
-} = require("./controllers/passwordController");
+} = require("./controllers/password-controllers");
 
 // MIDDLEWARE
 
