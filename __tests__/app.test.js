@@ -5,6 +5,12 @@ const request = require("supertest");
 const app = require("../app.js");
 require("jest-sorted");
 
+jest.mock("../utils/mailer", () => ({
+  messages: {
+    create: jest.fn().mockResolvedValue({ id: "test-id", message: "Queued" }),
+  },
+}));
+
 beforeEach(() => {
   return seed(testData);
 });
@@ -212,6 +218,74 @@ describe("PATCH /api/user/password - Change user password", () => {
       .expect(401)
       .then(({ body }) => {
         expect(body.msg).toBe("User not found");
+      });
+  });
+});
+
+describe.only("POST /api/forgot-password", () => {
+  test("Status 200: returns success message when email exists", () => {
+    return request(app)
+      .post("/api/forgot-password")
+      .send({ email: "test@test.com" })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "If that email exists, a reset link has been sent.",
+        );
+      });
+  });
+
+  test("Status 200: returns same message even when email doesn't exist", () => {
+    return request(app)
+      .post("/api/forgot-password")
+      .send({ email: "notreal@test.com" })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "If that email exists, a reset link has been sent.",
+        );
+      });
+  });
+});
+
+describe.only("POST /api/reset-password", () => {
+  test("Status 200: successfully resets password with valid token", () => {
+    const jwt = require("jsonwebtoken");
+    const validToken = jwt.sign({ user_id: 1 }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return request(app)
+      .post("/api/reset-password")
+      .send({ token: validToken, newPassword: "newpassword123" })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Password updated successfully.");
+      });
+  });
+
+  test("Status 400: returns error with invalid token", () => {
+    return request(app)
+      .post("/api/reset-password")
+      .send({ token: "notavalidtoken", newPassword: "newpassword123" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Reset link is invalid or has expired.");
+      });
+  });
+
+  test("Status 400: returns error with expired token", () => {
+    const jwt = require("jsonwebtoken");
+    const expiredToken = jwt.sign({ user_id: 1 }, process.env.JWT_SECRET, {
+      expiresIn: "0s",
+    });
+
+    return request(app)
+      .post("/api/reset-password")
+      .send({ token: expiredToken, newPassword: "newpassword123" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Reset link is invalid or has expired.");
       });
   });
 });

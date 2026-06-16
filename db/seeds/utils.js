@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 
-const saltRounds = 10;
+const saltRounds = process.env.NODE_ENV === "test" ? 1 : 10;
 
 const hashUsersData = async (usersData) => {
   return Promise.all(

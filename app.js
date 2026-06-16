@@ -13,6 +13,11 @@ const {
   patchUserPassword,
 } = require("./controllers/user-controllers");
 
+const {
+  forgotPassword,
+  resetPassword,
+} = require("./controllers/passwordController");
+
 // MIDDLEWARE
 
 app.use(cors());
@@ -45,6 +50,14 @@ app.post("/api/schedule/:user_id", authenticateToken, postToSchedule);
 // REMOVE EVENT FROM SCHEDULE
 
 app.patch("/api/schedule/:user_id", authenticateToken, removeFromSchedule);
+
+// FORGOT PASSWORD REQUEST
+
+app.post("/api/forgot-password", forgotPassword);
+
+// RESET PASSWORD REQUEST
+
+app.post("/api/reset-password", resetPassword);
 
 // ERRORS
 
