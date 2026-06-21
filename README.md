@@ -34,6 +34,9 @@ npm install
 ```
 PGDATABASE=edfringe_schedule_users
 JWT_SECRET=your_jwt_secret
+MAILGUN_API_KEY=your_mailgun_api_key
+MAILGUN_DOMAIN=your_mailgun_domain
+FRONTEND_URL=http://localhost:5173
 ```
 
 **.env.test**
@@ -71,6 +74,9 @@ Tests use a separate test database that is re-seeded before each test.
 | POST | `/api/login` | Authenticate user, returns JWT token | No |
 | POST | `/api/signup` | Create a new user | No |
 | POST | `/api/user/delete` | Delete a user account | No |
+| PATCH | `/api/user/password` | Update a user's password | No |
+| POST | `/api/forgot-password` | Request a password reset link by email | No |
+| POST | `/api/reset-password` | Reset password using a valid reset token | No |
 
 ### Schedule
 
@@ -142,15 +148,53 @@ Authorization: Bearer <token>
 
 **Response:** Updated array of remaining schedule items.
 
+### POST /api/forgot-password
+
+**Request body:**
+```json
+{
+  "email": "your@email.com"
+}
+```
+
+**Response:**
+```json
+{
+  "msg": "If that email exists, a reset link has been sent."
+}
+```
+
+If the email matches an account, a time-limited JWT reset token is generated and emailed to the user via Mailgun as a link to the frontend's reset password page. The same response is returned whether or not the email exists, so the endpoint doesn't reveal which emails are registered.
+
+### POST /api/reset-password
+
+**Request body:**
+```json
+{
+  "token": "eyJhbGci...",
+  "newPassword": "your_new_password"
+}
+```
+
+**Response:**
+```json
+{
+  "msg": "Password updated successfully."
+}
+```
+
+The token is verified and, if valid and unexpired, the user's password is updated (hashed with bcrypt). Expired or invalid tokens return a 400 error.
+
 ## Tech Stack
 
 - **Node.js** & **Express** — server and routing
 - **PostgreSQL** & **node-postgres (pg)** — database
 - **bcrypt** — password hashing
-- **jsonwebtoken** — authentication
+- **jsonwebtoken** — authentication and password reset tokens
+- **mailgun.js** — sends password reset emails
 - **pg-format** — safe SQL query formatting
 - **dotenv** — environment variable management
-- **Jest** & **Supertest** — testing
+- **Jest**, **jest-sorted** & **Supertest** — testing
 
 ## Scripts
 
@@ -160,6 +204,30 @@ Authorization: Bearer <token>
 | Seed | `npm run seed` | Seed the development database |
 | Seed prod | `npm run seed:prod` | Seed the production database |
 | Test | `npm test` | Run the test suite |
+
+## Project Structure
+
+```
+.
+├── app.js                          # Express app: middleware and route definitions
+├── listen.js                       # Starts the server
+├── controllers/
+│   ├── user-controllers.js         # Login, signup, delete, schedule, password patch
+│   └── password-controllers.js     # Forgot/reset password (JWT token + Mailgun)
+├── middleware/
+│   └── auth.js                     # JWT verification for protected routes
+├── models/
+│   └── user-models.js              # Database queries
+├── utils/
+│   └── mailer.js                   # Mailgun client setup
+├── db/
+│   ├── index.js                    # Database connection
+│   ├── setup.sql                   # Creates dev/test databases
+│   ├── data/                       # Seed data
+│   └── seeds/                      # Seeding scripts
+└── __tests__/
+    └── app.test.js                 # Endpoint tests (Jest + Supertest)
+```
 
 ## Frontend
 
