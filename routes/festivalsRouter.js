@@ -4,6 +4,8 @@ const axios = require("axios");
 const CryptoJS = require("crypto-js");
 
 router.get("/events", async (req, res) => {
+  console.log("KEY:", process.env.FESTIVAL_API_KEY);
+  console.log("SECRET:", process.env.FESTIVAL_SECRET);
   try {
     const {
       page = 1,
