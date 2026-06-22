@@ -38,7 +38,6 @@ router.get("/events", async (req, res) => {
 
     const response = await axios.get(
       `http://api.edinburghfestival.com${signedPath}`,
-      { httpsAgent: agent },
     );
     res.json(response.data);
   } catch (err) {
@@ -59,11 +58,9 @@ router.get("/search", async (req, res) => {
     const [titleRes, artistRes] = await Promise.all([
       axios.get(
         `http://api.edinburghfestival.com${titlePath}&signature=${CryptoJS.HmacSHA1(titlePath, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
-        { httpsAgent: agent },
       ),
       axios.get(
         `http://api.edinburghfestival.com${artistPath}&signature=${CryptoJS.HmacSHA1(artistPath, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
-        { httpsAgent: agent },
       ),
     ]);
 
