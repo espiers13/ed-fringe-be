@@ -30,12 +30,16 @@ router.get("/events", async (req, res) => {
     }
     path += `&key=${process.env.FESTIVAL_API_KEY}`;
 
-    const sortedQuery = path.split("&").sort().join("&");
+    const fullPath = `/events?${path}`;
+
+    console.log("Full path being signed:", fullPath);
+    console.log("Secret length:", process.env.FESTIVAL_SECRET?.length);
+
     const signature = CryptoJS.HmacSHA1(
-      sortedQuery,
+      fullPath,
       process.env.FESTIVAL_SECRET,
     ).toString(CryptoJS.enc.Hex);
-    const signedPath = `/events?${sortedQuery}&signature=${signature}`;
+    const signedPath = `${fullPath}&signature=${signature}`;
 
     const response = await axios.get(
       `http://api.edinburghfestival.com${signedPath}`,
