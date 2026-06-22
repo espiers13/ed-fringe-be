@@ -4,7 +4,10 @@ const axios = require("axios");
 const CryptoJS = require("crypto-js");
 const https = require("https");
 
-const agent = new https.Agent({ rejectUnauthorized: false });
+const agent = new https.Agent({
+  rejectUnauthorized: false,
+  servername: "api.edinburghfestival.com",
+});
 
 router.get("/events", async (req, res) => {
   try {
