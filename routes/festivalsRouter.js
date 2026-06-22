@@ -32,22 +32,14 @@ router.get("/events", async (req, res) => {
 
     const fullPath = `/events?${path}`;
 
-    console.log("Secret:", process.env.FESTIVAL_SECRET);
-
     const signature = CryptoJS.HmacSHA1(
       fullPath,
       process.env.FESTIVAL_SECRET,
     ).toString(CryptoJS.enc.Hex);
     const signedPath = `${fullPath}&signature=${signature}`;
 
-    console.log("Generated signature:", signature);
-    console.log(
-      "Full signed URL:",
-      `http://api.edinburghfestival.com${signedPath}`,
-    );
-
     const response = await axios.get(
-      `http://api.edinburghfestival.com${signedPath}`,
+      `http://api.edinburghfestivalcity.com${signedPath}`,
     );
     res.json(response.data);
   } catch (err) {
@@ -67,10 +59,10 @@ router.get("/search", async (req, res) => {
 
     const [titleRes, artistRes] = await Promise.all([
       axios.get(
-        `http://api.edinburghfestival.com/events?${titleQuery}&signature=${CryptoJS.HmacSHA1(titleQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
+        `http://api.edinburghfestivalcity.com/events?${titleQuery}&signature=${CryptoJS.HmacSHA1(titleQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
       ),
       axios.get(
-        `http://api.edinburghfestival.com/events?${artistQuery}&signature=${CryptoJS.HmacSHA1(artistQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
+        `http://api.edinburghfestivalcity.com/events?${artistQuery}&signature=${CryptoJS.HmacSHA1(artistQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
       ),
     ]);
 
