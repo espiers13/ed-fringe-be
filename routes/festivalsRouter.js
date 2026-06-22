@@ -30,15 +30,11 @@ router.get("/events", async (req, res) => {
     }
     path += `&key=${process.env.FESTIVAL_API_KEY}`;
 
-    const fullPath = `/events?${path}`;
-
-    console.log("Signing string:", fullPath);
-
     const signature = CryptoJS.HmacSHA1(
-      fullPath,
+      path,
       process.env.FESTIVAL_SECRET,
     ).toString(CryptoJS.enc.Hex);
-    const signedPath = `${fullPath}&signature=${signature}`;
+    const signedPath = `/events?${path}&signature=${signature}`;
 
     const response = await axios.get(
       `http://api.edinburghfestival.com${signedPath}`,
@@ -56,15 +52,15 @@ router.get("/search", async (req, res) => {
     const encoded = encodeURIComponent(query);
     const baseParams = `festival=demofringe&key=${process.env.FESTIVAL_API_KEY}`;
 
-    const titlePath = `/events?${baseParams}&title=${encoded}`;
-    const artistPath = `/events?${baseParams}&artist=${encoded}`;
+    const titleQuery = `festival=demofringe&key=${process.env.FESTIVAL_API_KEY}&title=${encoded}`;
+    const artistQuery = `festival=demofringe&key=${process.env.FESTIVAL_API_KEY}&artist=${encoded}`;
 
     const [titleRes, artistRes] = await Promise.all([
       axios.get(
-        `http://api.edinburghfestival.com${titlePath}&signature=${CryptoJS.HmacSHA1(titlePath, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
+        `http://api.edinburghfestival.com/events?${titleQuery}&signature=${CryptoJS.HmacSHA1(titleQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
       ),
       axios.get(
-        `http://api.edinburghfestival.com${artistPath}&signature=${CryptoJS.HmacSHA1(artistPath, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
+        `http://api.edinburghfestival.com/events?${artistQuery}&signature=${CryptoJS.HmacSHA1(artistQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
       ),
     ]);
 
