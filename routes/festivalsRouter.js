@@ -30,12 +30,12 @@ router.get("/events", async (req, res) => {
     }
     path += `&key=${process.env.FESTIVAL_API_KEY}`;
 
-    const sortedQuery = path.split("&").sort().join("&");
+    const fullPath = `/events?${path}`;
     const signature = CryptoJS.HmacSHA1(
-      sortedQuery,
+      fullPath,
       process.env.FESTIVAL_SECRET,
     ).toString(CryptoJS.enc.Hex);
-    const signedPath = `/events?${sortedQuery}&signature=${signature}`;
+    const signedPath = `${fullPath}&signature=${signature}`;
 
     const response = await axios.get(
       `http://api.edinburghfestival.com${signedPath}`,
@@ -46,6 +46,7 @@ router.get("/events", async (req, res) => {
     res.status(err.response?.status || 500).json({ msg: err.message });
   }
 });
+
 router.get("/search", async (req, res) => {
   try {
     const { query } = req.query;
