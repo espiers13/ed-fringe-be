@@ -41,6 +41,7 @@ router.get("/events", async (req, res) => {
     );
     res.json(response.data);
   } catch (err) {
+    console.error("Festival API error:", err.message, err.response?.data);
     res.status(err.response?.status || 500).json({ msg: err.message });
   }
 });
@@ -71,6 +72,7 @@ router.get("/search", async (req, res) => {
 
     res.json(unique);
   } catch (err) {
+    console.error("Festival API error:", err.message, err.response?.data);
     res.status(err.response?.status || 500).json({ msg: err.message });
   }
 });
