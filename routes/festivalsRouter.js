@@ -1,3 +1,6 @@
+const express = require("express");
+const router = express.Router();
+
 router.get("/events", async (req, res) => {
   const query = new URLSearchParams(req.query).toString();
   const signature = CryptoJS.HmacSHA1(
