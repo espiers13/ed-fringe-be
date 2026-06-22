@@ -1,11 +1,5 @@
-const formData = require("form-data");
-const Mailgun = require("mailgun.js");
+const { Resend } = require("resend");
 
-const mailgun = new Mailgun(formData);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const mg = mailgun.client({
-  username: "api",
-  key: process.env.MAILGUN_API_KEY,
-});
-
-module.exports = mg;
+module.exports = resend;

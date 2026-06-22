@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const db = require("../db");
-const mg = require("../utils/mailer");
+const resend = require("../utils/mailer");
 
 exports.forgotPassword = (req, res) => {
   const { email } = req.body;
@@ -23,9 +23,9 @@ exports.forgotPassword = (req, res) => {
 
       const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
-      return mg.messages
-        .create(process.env.MAILGUN_DOMAIN, {
-          from: `Fringe Planner <mailgun@${process.env.MAILGUN_DOMAIN}>`,
+      return resend.emails
+        .send({
+          from: "Fringe Planner <onboarding@resend.dev>",
           to: [email],
           subject: "Reset your Fringe Planner password",
           html: `
