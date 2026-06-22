@@ -2,10 +2,11 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const CryptoJS = require("crypto-js");
+const https = require("https");
+
+const agent = new https.Agent({ rejectUnauthorized: false });
 
 router.get("/events", async (req, res) => {
-  console.log("KEY:", process.env.FESTIVAL_API_KEY);
-  console.log("SECRET:", process.env.FESTIVAL_SECRET);
   try {
     const {
       page = 1,
@@ -40,6 +41,7 @@ router.get("/events", async (req, res) => {
 
     const response = await axios.get(
       `https://api.edinburghfestival.com${signedPath}`,
+      { httpsAgent: agent },
     );
     res.json(response.data);
   } catch (err) {
@@ -60,9 +62,11 @@ router.get("/search", async (req, res) => {
     const [titleRes, artistRes] = await Promise.all([
       axios.get(
         `https://api.edinburghfestival.com${titlePath}&signature=${CryptoJS.HmacSHA1(titlePath, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
+        { httpsAgent: agent },
       ),
       axios.get(
         `https://api.edinburghfestival.com${artistPath}&signature=${CryptoJS.HmacSHA1(artistPath, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
+        { httpsAgent: agent },
       ),
     ]);
 
