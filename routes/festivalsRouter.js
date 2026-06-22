@@ -79,4 +79,23 @@ router.get("/search", async (req, res) => {
   }
 });
 
+router.get("/events/:code", async (req, res) => {
+  try {
+    const { code } = req.params;
+    const path = `/events?festival=demofringe&code=${code}&key=${process.env.FESTIVAL_API_KEY}`;
+    const signature = CryptoJS.HmacSHA1(
+      path,
+      process.env.FESTIVAL_SECRET,
+    ).toString(CryptoJS.enc.Hex);
+
+    const response = await axios.get(
+      `https://api.edinburghfestivalcity.com${path}&signature=${signature}`,
+    );
+    res.json(response.data[0] ?? null);
+  } catch (err) {
+    console.error("Festival API error:", err.message, err.response?.data);
+    res.status(err.response?.status || 500).json({ msg: err.message });
+  }
+});
+
 module.exports = router;
