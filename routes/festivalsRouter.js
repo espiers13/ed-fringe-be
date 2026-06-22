@@ -32,8 +32,8 @@ router.get("/events", async (req, res) => {
 
     const fullPath = `/events?${path}`;
 
-    console.log("Full path being signed:", fullPath);
-    console.log("Secret length:", process.env.FESTIVAL_SECRET?.length);
+    console.log("Secret start:", process.env.FESTIVAL_SECRET?.slice(0, 10));
+    console.log("Secret end:", process.env.FESTIVAL_SECRET?.slice(-5));
 
     const signature = CryptoJS.HmacSHA1(
       fullPath,
