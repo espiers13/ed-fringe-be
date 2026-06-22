@@ -13,6 +13,8 @@ const {
   patchUserPassword,
 } = require("./controllers/user-controllers");
 
+const festivalsRouter = require("./routes/festivalsRouter");
+
 const {
   forgotPassword,
   resetPassword,
@@ -58,6 +60,9 @@ app.post("/api/forgot-password", forgotPassword);
 // RESET PASSWORD REQUEST
 
 app.post("/api/reset-password", resetPassword);
+
+// FESTIVALS API PROXY
+app.use("/api/festivals", festivalsRouter);
 
 // ERRORS
 
