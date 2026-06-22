@@ -4,8 +4,6 @@ const axios = require("axios");
 const CryptoJS = require("crypto-js");
 
 router.get("/events", async (req, res) => {
-  console.log("SECRET being used:", process.env.FESTIVAL_SECRET?.slice(0, 5));
-
   try {
     const {
       page = 1,
@@ -33,6 +31,9 @@ router.get("/events", async (req, res) => {
     path += `&key=${process.env.FESTIVAL_API_KEY}`;
 
     const fullPath = `/events?${path}`;
+
+    console.log("Signing string:", fullPath);
+
     const signature = CryptoJS.HmacSHA1(
       fullPath,
       process.env.FESTIVAL_SECRET,
