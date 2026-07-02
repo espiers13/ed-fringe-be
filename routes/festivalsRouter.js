@@ -54,8 +54,8 @@ router.get("/search", async (req, res) => {
     const encoded = encodeURIComponent(query);
     const baseParams = `festival=fringe&key=${process.env.FESTIVAL_API_KEY}`;
 
-    const titleQuery = `festival=fringe&key=${process.env.FESTIVAL_API_KEY}&title=${encoded}`;
-    const artistQuery = `festival=fringe&key=${process.env.FESTIVAL_API_KEY}&artist=${encoded}`;
+    const titleQuery = `/events?festival=fringe&key=${process.env.FESTIVAL_API_KEY}&title=${encoded}`;
+    const artistQuery = `/events?festival=fringe&key=${process.env.FESTIVAL_API_KEY}&artist=${encoded}`;
 
     const [titleRes, artistRes] = await Promise.all([
       axios.get(
