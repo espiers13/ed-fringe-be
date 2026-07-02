@@ -52,10 +52,10 @@ router.get("/search", async (req, res) => {
   try {
     const { query } = req.query;
     const encoded = encodeURIComponent(query);
-    const baseParams = `festival=demofringe&key=${process.env.FESTIVAL_API_KEY}`;
+    const baseParams = `festival=fringe&key=${process.env.FESTIVAL_API_KEY}`;
 
-    const titleQuery = `festival=demofringe&key=${process.env.FESTIVAL_API_KEY}&title=${encoded}`;
-    const artistQuery = `festival=demofringe&key=${process.env.FESTIVAL_API_KEY}&artist=${encoded}`;
+    const titleQuery = `festival=fringe&key=${process.env.FESTIVAL_API_KEY}&title=${encoded}`;
+    const artistQuery = `festival=fringe&key=${process.env.FESTIVAL_API_KEY}&artist=${encoded}`;
 
     const [titleRes, artistRes] = await Promise.all([
       axios.get(
@@ -82,7 +82,7 @@ router.get("/search", async (req, res) => {
 router.get("/events/:code", async (req, res) => {
   try {
     const { code } = req.params;
-    const path = `/events?festival=demofringe&code=${code}&key=${process.env.FESTIVAL_API_KEY}`;
+    const path = `/events?festival=fringe&code=${code}&key=${process.env.FESTIVAL_API_KEY}`;
     const signature = CryptoJS.HmacSHA1(
       path,
       process.env.FESTIVAL_SECRET,
