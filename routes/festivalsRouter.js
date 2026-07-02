@@ -52,17 +52,16 @@ router.get("/search", async (req, res) => {
   try {
     const { query } = req.query;
     const encoded = encodeURIComponent(query);
-    const baseParams = `festival=fringe&key=${process.env.FESTIVAL_API_KEY}`;
 
     const titleQuery = `/events?festival=fringe&key=${process.env.FESTIVAL_API_KEY}&title=${encoded}`;
     const artistQuery = `/events?festival=fringe&key=${process.env.FESTIVAL_API_KEY}&artist=${encoded}`;
 
     const [titleRes, artistRes] = await Promise.all([
       axios.get(
-        `http://api.edinburghfestivalcity.com/events?${titleQuery}&signature=${CryptoJS.HmacSHA1(titleQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
+        `http://api.edinburghfestivalcity.com${titleQuery}&signature=${CryptoJS.HmacSHA1(titleQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
       ),
       axios.get(
-        `http://api.edinburghfestivalcity.com/events?${artistQuery}&signature=${CryptoJS.HmacSHA1(artistQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
+        `http://api.edinburghfestivalcity.com${artistQuery}&signature=${CryptoJS.HmacSHA1(artistQuery, process.env.FESTIVAL_SECRET).toString(CryptoJS.enc.Hex)}`,
       ),
     ]);
 
