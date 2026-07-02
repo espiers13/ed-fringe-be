@@ -16,7 +16,7 @@ router.get("/events", async (req, res) => {
       code = "",
     } = req.query;
 
-    let path = `festival=demofringe&from=${page}&size=${size}`;
+    let path = `festival=fringe&from=${page}&size=${size}`;
 
     if (code) path += `&code=${code}`;
     if (date) {
