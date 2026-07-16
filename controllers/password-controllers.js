@@ -25,7 +25,7 @@ exports.forgotPassword = (req, res) => {
 
       return resend.emails
         .send({
-          from: "Fringe Planner <onboarding@resend.dev>",
+          from: "Fringe Planner <noreply@myfringeplanner.co.uk>",
           to: [email],
           subject: "Reset your Fringe Planner password",
           html: `
